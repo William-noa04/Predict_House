@@ -3,4 +3,5 @@ scikit-learn
 joblib
 numpy
 pandas
-tensorflow==2.15.1
+keras
+h5py

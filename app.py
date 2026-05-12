@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import base64
 from pathlib import Path
-import tensorflow as tf
+import keras
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -185,7 +185,39 @@ st.markdown(
 
 # ── Load model & scalers ──────────────────────────────────────────────────────
 @st.cache_resource
+@st.cache_resource
 def load_assets():
+    errors = []
+    model, scaler_x, scaler_y = None, None, None
+
+    for model_file in ["rf_model.keras", "rf_model.h5"]:
+        if Path(model_file).exists():
+            try:
+                model = keras.models.load_model(model_file)
+                break
+            except Exception as e:
+                errors.append(f"Modèle ({model_file}) : {e}")
+
+    if model is None:
+        errors.append("rf_model.keras introuvable")
+
+    if Path("scaler_x.joblib").exists():
+        try:
+            scaler_x = joblib.load("scaler_x.joblib")
+        except Exception as e:
+            errors.append(f"scaler_x : {e}")
+    else:
+        errors.append("scaler_x.joblib introuvable")
+
+    if Path("scaler_y.joblib").exists():
+        try:
+            scaler_y = joblib.load("scaler_y.joblib")
+        except Exception as e:
+            errors.append(f"scaler_y : {e}")
+    else:
+        errors.append("scaler_y.joblib introuvable")
+
+    return model, scaler_x, scaler_y, errors
     errors = []
     model, scaler_x, scaler_y = None, None, None
 
